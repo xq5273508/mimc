@@ -26,7 +26,7 @@ function notice_message_format(id, notice, props = {}) {
  */
 async function SendGroupNotice(id, notice, props = {}) {
   const message = notice_message_format(id, notice, props);
-  await SendMessage(id, message, true);
+  await SendMessage(id, message, "", true);
 }
 
 /**
@@ -90,8 +90,8 @@ export class GroupService {
    * @param remark  {string}  申请备注
    * @returns {Promise<void>}
    */
-  static async apply(id, owner,remark) {
-    const message = notice_message_format(id, EnumGroupNotice.ApplyJoin,{remark});
+  static async apply(id, owner, remark) {
+    const message = notice_message_format(id, EnumGroupNotice.ApplyJoin, {remark});
     await SendMessage(owner, message);
   }
 

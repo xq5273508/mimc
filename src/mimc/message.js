@@ -1,7 +1,7 @@
 import {Events} from "./register";
 import {MIMCClient} from "./client";
 import {TransSystemCommand} from "./command";
-import {ToPromise} from "../libs/utils";
+import {Guid, ToPromise} from "../libs/utils";
 
 const MessageSet = {};
 
@@ -19,6 +19,7 @@ export function SendMessage(to, message, packetId, is_group = false) {
     if (!to) {
       return;
     }
+    packetId = packetId || Guid();
     if (is_group) {
       MIMCClient.user.sendGroupMessage(to, message, "json", undefined, packetId);
     }
