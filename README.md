@@ -3,25 +3,31 @@
 ## SDK组成
 1、Enum:枚举项
         EnumStatus、EnumDevice、EnumGroupNotice
+
 2、Register: 消息事件注册,提供接收消息（人、群）、登录Token、群消息、登录状态改变
+
 3、Service: 消息服务，提供配置初始化、登录、退出登录、发消息
-4、Group: 群操作，提供获取用户所有群列表、获取某个群详情、建群、解散群、踢人、退群、邀请入群,
+
+4、Group: 群操作，提供获取用户所有群列表、获取某个群详情、建群、解散群、踢人、退群、邀请入群
+
 5、Ajax:提供同步、异步多种Method的Web请求
         GetSync、GetAsync、PostSync、PostAsync、DeleteSync、DeleteAsync
+	
 6、Message:消息相关，提供消息转换的实现
         TranslateTo2018, TranslateTo2019
 
 ## 一、枚举项
 1、EnumStatus        用户状态枚举
-	Connecting: -1,	    //登录中
-	None: 0,			//未登录
+	Connecting: -1,	        //登录中
+	None: 0,		//未登录
 	Connected: 1,		//登录成功
 	Elsewhere: 2,		//别处登录
 	DisConnect: 3,		//断开连接
+	
 2、EnumDevice        登录设备枚举（系统会进行同一设备不允许多端登录的控制）
 	Mobile: 1,		    //手机端
 	PC: 2,			    //电脑端
-	Server: 4			//系统服务
+	Server: 4		    //系统服务
 3、EnumGroupNotice   群通知类型
 	Dismiss: 2,         //解散群
 	ApplyJoinReply: 11, //加群申请回复
