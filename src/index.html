@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>WebSocket Test</title>
+  <style>
+    fieldset {
+      border: 1px solid #d4d4d4;
+    }
+  </style>
+</head>
+<body>
+
+<fieldset>
+  <legend>给用户发消息</legend>
+  <div>发送给:<input type="text" id="toAccount" value=""/>
+    内容：<input type="text" id="message" value=""/></div>
+  <input type="button" value="确定" onclick="send()">
+</fieldset>
+<fieldset>
+  <legend>查询用户在线状态</legend>
+  <div>
+    用户id列表（,分割）:<input type="text" id="online_accounts" value=""/>
+    要查询的在线端的设备类型:<input type="text" id="online_device" value=""/>
+  </div>
+  <input type="button" value="确定" onclick="online()">
+</fieldset>
+
+<div style="margin-top: 30px;">
+  群操作：
+  <fieldset>
+    <legend>查询所加入的群</legend>
+    <input type="button" value="确定" onclick="group_list()">
+  </fieldset>
+  <fieldset>
+    <legend>发消息</legend>
+    <div>群号:<input type="text" id="to_group" value=""/>
+      内容：<input type="text" id="group_message" value=""/></div>
+    <input type="button" value="确定" onclick="group_send()">
+  </fieldset>
+  <fieldset>
+    <legend>详情</legend>
+    <div>群编号：<input type="text" id="info_id"/></div>
+    <input type="button" value="确定" onclick="group_info()">
+  </fieldset>
+  <fieldset>
+    <legend>群主新建</legend>
+    <div>群名称：<input type="text" id="create_name"/>群成员id列表（,分割）：<input type="text" id="create_members"/></div>
+    <input type="button" value="确定" onclick="group_create()">
+  </fieldset>
+  <fieldset>
+    <legend>群主邀请</legend>
+    <div>群编号：<input type="text" id="invite_id"/>群成员id列表（,分割）：<input type="text" id="invite_members"/></div>
+    <input type="button" value="确定" onclick="group_invite()">
+  </fieldset>
+  <fieldset>
+    <legend>成员退群</legend>
+    <div>群编号：<input type="text" id="quit_id" value=""/></div>
+    <input type="button" value="确定" onclick="group_quit()">
+  </fieldset>
+  <fieldset>
+    <legend>群主踢人</legend>
+    <div>群编号：<input type="text" id="remove_id" value=""/>群成员id列表（,分割）：<input type="text" id="remove_members"/></div>
+    <input type="button" value="确定" onclick="group_remove()">
+  </fieldset>
+  <fieldset>
+    <legend>群主解散</legend>
+    <div>群编号：<input type="text" id="dismiss_id" value=""/></div>
+    <input type="button" value="确定" onclick="group_dismiss()">
+  </fieldset>
+
+</div>
+</body>
+
+<script>
+  const params = {};
+  document.location.search.substr(1)
+    .split('&')
+    .forEach(_params => {
+      const [key, val] = _params.split('=');
+      params[key] = decodeURI(val);
+    });
+
+
+  const appId = "2882303761518057596";
+  const appKey = "5571805711596";
+  const appSecret = "/Xn93U6c+0xDXCUETSwsLQ==";
+
+  const appAccount = params["id"] || "1";
+  MIMC.Register("FetchToken", () => {
+    const data = {appId, appKey, appSecret, appAccount};
+    return MIMC.Ajax.PostSync('https://mimc.chat.xiaomi.net/api/account/token', data);
+  });
+
+  MIMC.Register("StatusChange", (status) => {
+    console.log("statusChange", status);
+  });
+  MIMC.Register("ReceiveMessage", (message) => {
+    console.log("receiveMessage", message);
+  });
+  MIMC.Register("GroupNotice", (type, notice) => {
+    console.log("groupNotice", type, notice);
+  });
+
+  MIMC.Register("Sync", () => {
+    console.log("sync");
+  });
+
+
+  const device = params["device"] || "1";
+  MIMC.Service.config(appId, appAccount, parseInt(device));
+  MIMC.Service.login();
+
+  function elValue(id) {
+    return document.getElementById(id).value;
+  }
+
+  function send() {
+    MIMC.Service.send(elValue("toAccount"), elValue("message")).then(domain => {
+      console.log("消息发送成功,Domain:", domain)
+    });
+  }
+
+  function online() {
+    MIMC.Service.online(elValue("online_accounts"), elValue("online_device")).then(data => {
+      console.log("在线状态:", data)
+    });
+  }
+
+  function group_list() {
+    MIMC.Group.list().then(list => {
+    });
+  }
+
+  function group_send() {
+    MIMC.Service.send(elValue("to_group"), elValue("group_message"), true).then(domain => {
+      console.log("消息发送成功,Domain:", domain)
+    });
+  }
+
+  function group_create() {
+    MIMC.Group.create(elValue("create_name"), elValue("create_members")).then((id) => {
+    }).catch((error) => {
+    });
+  }
+
+  function group_invite() {
+    MIMC.Group.invite(elValue("invite_id"), elValue("invite_members"));
+  }
+
+  function group_info() {
+    MIMC.Group.info(elValue("info_id")).then(info => {
+    });
+  }
+
+  function group_remove() {
+    MIMC.Group.remove(elValue("remove_id"), elValue("remove_members"));
+  }
+
+  function group_quit() {
+    MIMC.Group.quit(elValue("quit_id"));
+  }
+
+  function group_dismiss() {
+    MIMC.Group.dismiss(elValue("dismiss_id"));
+  }
+</script>
+</html>
