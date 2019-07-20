@@ -32,7 +32,7 @@ export function TransSystemCommand(command, options) {
         return;
       }
       MIMCClient.status = EnumStatus.Elsewhere;
-      Events.onStatusChange(EnumStatus.Elsewhere);
+      Events.onStateChange(EnumStatus.Elsewhere);
       MIMCClient.user && MIMCClient.user.logout();
       break;
     case EnumCommand.GroupNotice:

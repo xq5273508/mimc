@@ -87,22 +87,22 @@
   const appSecret = "/Xn93U6c+0xDXCUETSwsLQ==";
 
   const appAccount = params["id"] || "1";
-  MIMC.Register("FetchToken", () => {
+  MIMC.Register(MIMC.Enum.EnumEvent.FetchToken, () => {
     const data = {appId, appKey, appSecret, appAccount};
     return MIMC.Ajax.PostSync('https://mimc.chat.xiaomi.net/api/account/token', data);
   });
 
-  MIMC.Register("StatusChange", (status) => {
-    console.log("statusChange", status);
+  MIMC.Register(MIMC.Enum.EnumEvent.StateChange, (status) => {
+    console.log("stateChange", status);
   });
-  MIMC.Register("ReceiveMessage", (message) => {
+  MIMC.Register(MIMC.Enum.EnumEvent.ReceiveMessage, (message) => {
     console.log("receiveMessage", message);
   });
-  MIMC.Register("GroupNotice", (type, notice) => {
+  MIMC.Register(MIMC.Enum.EnumEvent.GroupNotice, (type, notice) => {
     console.log("groupNotice", type, notice);
   });
 
-  MIMC.Register("Sync", () => {
+  MIMC.Register(MIMC.Enum.EnumEvent.Sync, () => {
     console.log("sync");
   });
 

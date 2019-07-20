@@ -1,8 +1,9 @@
 import {GetAsync, GetSync, PostAsync, PostSync, DeleteAsync, DeleteSync} from "./libs/ajax";
-import {EnumDevice, EnumStatus, EnumGroupNotice} from "./mimc/enum";
+import {EnumDevice, EnumStatus, EnumGroupNotice,EnumEvent} from "./mimc/enum";
 import {Register} from "./mimc/register";
 import {MIMCService} from "./mimc/service";
 import {GroupService} from "./mimc/group";
+import {Guid, ToPromise} from "./libs/utils";
 
 export const MIMC = {
   Service: MIMCService,
@@ -12,6 +13,7 @@ export const MIMC = {
     EnumStatus,
     EnumDevice,
     EnumGroupNotice,
+    EnumEvent
   },
   Ajax: {
     GetSync,
@@ -21,4 +23,5 @@ export const MIMC = {
     DeleteSync,
     DeleteAsync,
   },
+  Utils: {Guid, ToPromise}
 };

@@ -81,12 +81,12 @@ export class MIMCService {
    * 发送消息
    * @param toAccount     {string}    消息接收人编号（可以是群号）
    * @param message       {string}    消息内容
-   * @param packetId      {string}    消息类型
+   * @param packetId      {string}    消息客户端ID
    * @param isGroup       {boolean}   是否是给群组发消息
    * @returns {*}
    */
-  static send(toAccount, message, packetId = 1, isGroup = false) {
-    return SendMessage(toAccount, message,packetId, isGroup);
+  static send(toAccount, message, packetId = "", isGroup = false) {
+    return SendMessage(toAccount, message, packetId, isGroup);
   }
 
   /**

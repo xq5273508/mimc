@@ -13,5 +13,5 @@ export const MIMCClient = {
 
 export function StateChange(_state, ...args) {
   MIMCClient.status = _state;
-  Events.onStatusChange(_state, ...args);
+  Events.onStateChange(_state, ...args);
 }
