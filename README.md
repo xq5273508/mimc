@@ -12,9 +12,6 @@
 
 5、Ajax:提供同步、异步多种Method的Web请求
         GetSync、GetAsync、PostSync、PostAsync、DeleteSync、DeleteAsync
-	
-6、Message:消息相关，提供消息转换的实现
-        TranslateTo2018, TranslateTo2019
 
 ## 一、枚举项
 1、EnumStatus        用户状态枚举
@@ -47,22 +44,22 @@
 事件参数：
 空
 调用方式：
-MIMC.Register.fetchToken=()=>{
+MIMC.Register("FetchToken", ()=>{
   //1、调用认证代理服务TokenProxyServer，由认证代理调用小米Token服务
   //sync.get(“//api.maidiyun.com/im/mitoken/account”);
   //2、直接调用小米Token服务
   const data = {appId, appKey, appSecret, appAccount};
   return MIMC.PostSync('https://mimc.chat.xiaomi.net/api/account/token', data);
-}
+});
 
-2、statusChange
+2、stateChange
 用户在线状态事件注册
 事件参数：
  @param status {EnumStatus}
 调用方式：
-MIMC.Register.statusChange = (status) => {
-  console.log("statusChange", status);
-};
+MIMC.Register("stateChange", (status) => {
+  console.log("stateChange", status);
+});
 
 3、receiveMessage
 接收消息（用户、群消息）
@@ -74,9 +71,9 @@ MIMC.Register.statusChange = (status) => {
     content:消息内容
     group_id:消息所属群id（接收用户消息的时候该属性为undefined,只有群消息才返回群号）
 调用方式:
-MIMC.Register.receiveMessage = (message) => {
+MIMC.Register("ReceiveMessage", (message) => {
   console.log("receiveMessage", message);
-};
+});
 
 4、groupNotice
 群通知注册，由于小米不支持群通知，所以使用指令来模拟群消息（<m_mimc,4）
@@ -84,28 +81,9 @@ MIMC.Register.receiveMessage = (message) => {
 @param type {EnumGroupNotice}
 @param notice {Object}
 调用方式:
-MIMC.Register.groupNotice = (type,notice) => {
+MIMC.Register("groupNotice", (type,notice) => {
   console.log("groupNotice",type,notice);
-};
-
-5、absolutePath2018
-根据key获取万企联中文件绝对路径
-事件参数：
-@param path {string}
-调用方式:
-MIMC.Register.absolutePath2018 = (path) => {
-  return "http://api50.maidiyun.com/api/v1/File/DownLoadPic?filePath=" + path;
-};
-
-6、absolutePath2019
-根据key获取今日制造中文件绝对路径
-事件参数：
-@param path {string}
-调用方式:
-MIMC.Register.absolutePath2019 = (path) => {
-  const key = path.replace(/^[^/]+\//, "");
-  return "http://oss.maidiyun.cn/111/" + key;
-};
+});
 
 7、sync（需要完善）
 用于进行多端状态同步的事件
@@ -128,10 +106,11 @@ MIMC.Register.absolutePath2019 = (path) => {
 3、logout()
 退出小米消息云登录
 
-4、send(toAccount, message, is_group = false)
+4、send(toAccount, message, packetId = "", isGroup = false)
 消息发送,给群发消息的时候toAccount为群编号，is_group设置为true
 @param toAccount     {string}    消息接收人编号（可以是群号）
 @param message       {string}    消息内容
+@param packetId      {string}    消息客户端ID
 @param is_group      {boolean}   是否是给群组发消息
 
 5、online(accounts, device = EnumDevice.Mobile)
@@ -218,12 +197,3 @@ MIMC.Register.absolutePath2019 = (path) => {
 @param url       {string}    数据请求地址
 @param data      {Object}    请求的数据
 @param headers   {Object}    请求携带的Header信息
-
-## 六、消息处理
-1、TranslateTo2018
-消息转换为万企联消息格式
-@param message   {string}  要转换的消息内容
-
-2、TranslateTo2019
-消息转换为今日制造消息格式
-@param message   {string}  要转换的消息内容
