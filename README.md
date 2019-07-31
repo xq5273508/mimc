@@ -126,10 +126,11 @@ MIMC.Register("groupNotice", (type,notice) => {<br/>
 @param id      {string}  群号<br/>
 @param member  {string}  申请人<br/>
 @param agree   {boolean} 同意<br/><br/>
-7、async remove(id, members)<br/>
+7、async remove(id, members,token)<br/>
 删除群成员<br/>
 @param id      {string}    群号<br/>
-@param members {string}    要踢的群成员id列表（,连接）<br/><br/>
+@param members {string}    要踢的群成员id列表（,连接）<br/>
+@param token   {string}    群主token（支持业务自己判断是否是管理员，如果是管理员，则允许使用群主的身份踢人）<br/><br/>
 8、async quit(id)<br/>
 退群操作<br/>
 @param id      {string}    群号<br/><br/>
