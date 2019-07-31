@@ -87,8 +87,9 @@
   const appSecret = "/Xn93U6c+0xDXCUETSwsLQ==";
 
   const appAccount = params["id"] || "1";
-  MIMC.Register(MIMC.Enum.EnumEvent.FetchToken, () => {
-    const data = {appId, appKey, appSecret, appAccount};
+
+  MIMC.Register(MIMC.Enum.EnumEvent.FetchToken, (account) => {
+    const data = {appId, appKey, appSecret, appAccount: account || appAccount};
     return MIMC.Ajax.PostSync('https://mimc.chat.xiaomi.net/api/account/token', data);
   });
 
@@ -104,6 +105,10 @@
 
   MIMC.Register(MIMC.Enum.EnumEvent.Sync, () => {
     console.log("sync");
+  });
+
+  MIMC.Register("isGroupManager", (account, group) => {
+    return false;
   });
 
 

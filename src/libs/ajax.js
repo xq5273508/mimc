@@ -1,27 +1,23 @@
 import {ToPromise} from "./utils";
 
-export const Token = {token: ""};
 
 /**
  * 数据请求
  * @param url       {string}    数据请求地址
+ * @param method    {string}    数据请求Method方式
  * @param data      {Object}    请求的数据
  * @param headers   {Object}    请求携带的Header信息
- * @param method    {string}    数据请求Method方式
  * @param async     {boolean}   是否异步请求
  * @returns {*}
  * @constructor
  */
-export function HttpRequest(url, data, headers = {}, method, async = true) {
+export function HttpRequest(url, method, data, headers = {}, async = true) {
   const xhr = new XMLHttpRequest();
   xhr.open(method, url, async);
   xhr.setRequestHeader('content-type', 'application/json');
   let header;
   for (header in headers) {
     xhr.setRequestHeader(header, headers[header]);
-  }
-  if (Token.token) {
-    xhr.setRequestHeader("token", Token.token);
   }
   if (async) {
     return ToPromise((success, fail) => {
@@ -54,7 +50,7 @@ export function HttpRequest(url, data, headers = {}, method, async = true) {
  * @returns {*}
  */
 export function GetSync(url, data, headers) {
-  return HttpRequest(url, data, headers, "GET", false);
+  return HttpRequest(url, "GET", data, headers, false);
 }
 
 /**
@@ -65,7 +61,7 @@ export function GetSync(url, data, headers) {
  * @returns {*}
  */
 export function GetAsync(url, data, headers) {
-  return HttpRequest(url, data, headers, "GET");
+  return HttpRequest(url, "GET", data, headers);
 }
 
 /**
@@ -76,7 +72,7 @@ export function GetAsync(url, data, headers) {
  * @returns {*}
  */
 export function PostSync(url, data, headers) {
-  return HttpRequest(url, data, headers, "POST", false);
+  return HttpRequest(url, "POST", data, headers, false);
 }
 
 /**
@@ -87,7 +83,7 @@ export function PostSync(url, data, headers) {
  * @returns {*}
  */
 export function PostAsync(url, data, headers) {
-  return HttpRequest(url, data, headers, "POST");
+  return HttpRequest(url, "POST", data, headers);
 }
 
 /**
@@ -98,7 +94,7 @@ export function PostAsync(url, data, headers) {
  * @returns {*}
  */
 export function DeleteSync(url, data, headers) {
-  return HttpRequest(url, data, headers, "DELETE", false);
+  return HttpRequest(url, "DELETE", data, headers, false);
 }
 
 /**
@@ -109,5 +105,5 @@ export function DeleteSync(url, data, headers) {
  * @returns {*}
  */
 export function DeleteAsync(url, data, headers) {
-  return HttpRequest(url, data, headers, "DELETE");
+  return HttpRequest(url, "DELETE", data, headers);
 }

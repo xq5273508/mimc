@@ -1,12 +1,10 @@
-const mimc = require("../../loader/umd!../../loader/mimc!mimc-webjs-sdk/sdk/mimc-min_1_0_2");
 import {EnumCommand, EnumDevice, EnumStatus} from "./enum";
-import {MIMCClient, StateChange} from "./client";
-import {ReceiveMessage, SendMessage, SendCallback} from "./message";
-import {Events} from "./register";
+import {MIMCClient} from "./client";
 import {Guid} from "../libs/utils";
-import {Token} from "../libs/ajax";
-import {SystemCommand} from "./command";
+import {SystemCommand, TransSystemCommand} from "./command";
 import {Online} from "./online";
+import {User} from "./user";
+import {Events} from "./register";
 
 /**
  * 初始化小米消息云客户端，绑定各类事件
@@ -18,30 +16,37 @@ async function Init() {
     MIMCClient.state = EnumStatus.None;
     MIMCClient.timestamp = 0;
     MIMCClient.resource = Guid(MIMCClient.device, 4);
-    const user = MIMCClient.user = new mimc.MIMCUser(MIMCClient.appId, MIMCClient.appAccount, MIMCClient.resource);
-    user.registerP2PMsgHandler(message => {
-      ReceiveMessage(message);
+    const user = MIMCClient.user = new User(MIMCClient.appId, MIMCClient.appAccount, MIMCClient.resource);
+    user.onReceive((message) => {
+      const notice_match = (/^<system_command,(\d+),([^>]+)>$/ig).exec(message.content);
+      if (notice_match) {
+        return TransSystemCommand(parseInt(notice_match[1]), notice_match[2]);
+      }
+      if (MIMCClient.timestamp > parseInt(message.time)) {
+        //普通消息时间小于初始化时间，不显示
+        return;
+      }
+      Events.onReceiveMessage(message);
     });
-    user.registerGroupMsgHandler((message) => {
-      const receiver = message.getTopicId();
-      ReceiveMessage(message, receiver);
-    });
-    user.registerFetchToken(Events.onFetchToken);
-    user.registerStatusChange((status, ...args) => {
-      if (status) {
-        Token.token = user.getToken();
+    user.onStateChange((state, ...args) => {
+      if (state === EnumStatus.Connected) {
         MIMCClient.timestamp = Date.now();
         const message = SystemCommand(EnumCommand.Online, {
           resource: MIMCClient.resource
         });
-        SendMessage(MIMCClient.appAccount, message);
+        user.send(MIMCClient.appAccount, message);
       }
-      StateChange(status ? EnumStatus.Connected : EnumStatus.DisConnect, ...args);
+
+      MIMCClient.status = state;
+      Events.onStateChange(state, ...args);
     });
-    user.registerDisconnHandler(() => {
-      MIMCClient.status !== EnumStatus.Elsewhere && StateChange(EnumStatus.DisConnect);
+    user.onDisConn(() => {
+      if (MIMCClient.status === EnumStatus.Elsewhere) {
+        return;
+      }
+      MIMCClient.status = EnumStatus.DisConnect;
+      Events.onStateChange(EnumStatus.DisConnect);
     });
-    user.registerServerAckHandler(SendCallback);
   }
 }
 
@@ -66,14 +71,15 @@ export class MIMCService {
    */
   static async login() {
     await Init();
-    MIMCClient.user && MIMCClient.user.login();
+    MIMCClient.user && await MIMCClient.user.login();
+    console.log(MIMCClient.user.getToken());
   }
 
   /**
    * 退出小米消息云登录
    */
-  static logout() {
-    MIMCClient.user && MIMCClient.user.logout();
+  static async logout() {
+    MIMCClient.user && await MIMCClient.user.logout();
     MIMCClient.timestamp = 0;
   }
 
@@ -86,7 +92,7 @@ export class MIMCService {
    * @returns {*}
    */
   static send(toAccount, message, packetId = "", isGroup = false) {
-    return SendMessage(toAccount, message, packetId, isGroup);
+    return MIMCClient.user.send(toAccount, message, packetId, isGroup);
   }
 
   /**

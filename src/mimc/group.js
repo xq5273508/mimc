@@ -1,8 +1,8 @@
 import {GetAsync, DeleteAsync, PostAsync} from "../libs/ajax";
 import {MIMCClient} from "./client";
-import {SendMessage} from "./message";
 import {EnumCommand, EnumGroupNotice} from "./enum";
 import {SystemCommand} from "./command";
+import {Events} from "./register";
 
 /**
  * 构造群通知
@@ -26,7 +26,19 @@ function notice_message_format(id, notice, props = {}) {
  */
 async function SendGroupNotice(id, notice, props = {}) {
   const message = notice_message_format(id, notice, props);
-  await SendMessage(id, message, "", true);
+  await MIMCClient.user.send(id, message, "", true);
+}
+
+/**
+ * 邀请成员加入群，不需要被邀请人同意，直接加入群
+ * @param id        {string}  群编号
+ * @param members   {string}  群成员id列表（,连接）
+ * @param token     {string}  群主token
+ * @returns {Promise<*>}
+ */
+async function invite(id, members, token) {
+  const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}/accounts`;
+  return await PostAsync(url, {accounts: members}, {token});
 }
 
 /**
@@ -40,7 +52,7 @@ export class GroupService {
    */
   static async list() {
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/account`;
-    const result = await GetAsync(url);
+    const result = await GetAsync(url, undefined, {token: MIMCClient.user.getToken()});
     return result.data;
   }
 
@@ -51,7 +63,7 @@ export class GroupService {
    */
   static async info(id) {
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}`;
-    const result = await GetAsync(url);
+    const result = await GetAsync(url, undefined, {token: MIMCClient.user.getToken()});
     return result.data;
   }
 
@@ -64,7 +76,7 @@ export class GroupService {
   static async create(name, members) {
     const data = {topicName: name, accounts: members};
     const url = 'https://mimc.chat.xiaomi.net/api/topic/' + MIMCClient.appId;
-    const result = await PostAsync(url, data);
+    const result = await PostAsync(url, data, {token: MIMCClient.user.getToken()});
     const id = result.data.topicInfo.topicId;
     SendGroupNotice(id, EnumGroupNotice.Join, {members, mode: "create"});
     return id;
@@ -77,8 +89,7 @@ export class GroupService {
    * @returns {Promise<*>}
    */
   static async invite(id, members) {
-    const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}/accounts`;
-    const info = await PostAsync(url, {accounts: members});
+    const info = await invite(id, members, MIMCClient.user.getToken());
     SendGroupNotice(id, EnumGroupNotice.Join, {members, mode: "invite"});
     return info;
   }
@@ -92,7 +103,7 @@ export class GroupService {
    */
   static async apply(id, owner, remark) {
     const message = notice_message_format(id, EnumGroupNotice.ApplyJoin, {remark});
-    await SendMessage(owner, message);
+    await MIMCClient.user.send(owner, message);
   }
 
   /**
@@ -104,24 +115,28 @@ export class GroupService {
    */
   static async reply(id, member, agree = true) {
     if (agree) {
+      await this.invite(id, member);
       await SendGroupNotice(id, EnumGroupNotice.Join, {members: String(member), mode: "apply"})
     }
     else {
       const message = notice_message_format(id, EnumGroupNotice.ApplyJoinReply, {agree});
-      await SendMessage(member, message);
+      await MIMCClient.user.send(member, message);
     }
   }
 
   /**
    * 删除群成员
-   * @param id      {string}    群号
-   * @param members {string}    要踢的群成员id列表（,连接）
+   * @param id        {string}    群号
+   * @param members   {string}    要踢的群成员id列表（,连接）
+   * @param token     {string}    群主token
    * @returns {Promise<*>}
    */
-  static async remove(id, members) {
+  static async remove(id, members, token) {
+    //非群主也支持踢人（业务自己判断管理员身份）
+    token = token || MIMCClient.user.getToken();
     SendGroupNotice(id, EnumGroupNotice.MemberRemove, {members});
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}/accounts?accounts=${members}`;
-    return await DeleteAsync(url);
+    return await DeleteAsync(url, undefined, {token});
   }
 
   /**
@@ -132,7 +147,7 @@ export class GroupService {
   static async quit(id) {
     SendGroupNotice(id, EnumGroupNotice.MemberQuit, {});
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}/account`;
-    return await DeleteAsync(url);
+    return await DeleteAsync(url, undefined, {token: MIMCClient.user.getToken()});
   }
 
   /**
@@ -143,6 +158,6 @@ export class GroupService {
   static async dismiss(id) {
     SendGroupNotice(id, EnumGroupNotice.Dismiss, {});
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}`;
-    await DeleteAsync(url);
+    await DeleteAsync(url, undefined, {token: MIMCClient.user.getToken()});
   }
 }
