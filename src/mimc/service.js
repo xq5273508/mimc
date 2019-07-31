@@ -72,7 +72,6 @@ export class MIMCService {
   static async login() {
     await Init();
     MIMCClient.user && await MIMCClient.user.login();
-    console.log(MIMCClient.user.getToken());
   }
 
   /**
