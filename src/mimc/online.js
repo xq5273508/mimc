@@ -30,12 +30,11 @@ export async function Online(accounts, device = EnumDevice.Mobile) {
   if (offline.length) {
     const url = `https://mimc.chat.xiaomi.net/api/account/status`;
     try {
+      const token = MIMCClient.user.getToken();
       const result = await PostAsync(url, {
         appId: MIMCClient.appId,
         accounts: offline.join(),
-        appKey: "5571805711596",
-        appSecret: "/Xn93U6c+0xDXCUETSwsLQ=="
-      });
+      }, {token});
       offline.length = 0;
       result.data.forEach(item => {
         OnlineSet[item.account] = {
