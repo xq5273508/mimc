@@ -81,7 +81,6 @@
       params[key] = decodeURI(val);
     });
 
-
   const appId = "2882303761518057596";
   const appKey = "5571805711596";
   const appSecret = "/Xn93U6c+0xDXCUETSwsLQ==";
@@ -94,7 +93,7 @@
   });
 
   MIMC.Register(MIMC.Enum.EnumEvent.StateChange, (status) => {
-    console.log("stateChange", status);
+    console.log("stateChange", Date.now(), status);
   });
   MIMC.Register(MIMC.Enum.EnumEvent.ReceiveMessage, (message) => {
     console.log("receiveMessage", message);
@@ -114,14 +113,16 @@
 
   const device = params["device"] || "1";
   MIMC.Service.config(appId, appAccount, parseInt(device));
-  MIMC.Service.login();
+  MIMC.Service.login().then(() => {
+    console.log(Date.now(), "登录成功")
+  });
 
   function elValue(id) {
     return document.getElementById(id).value;
   }
 
   function send() {
-    MIMC.Service.send(elValue("toAccount"), elValue("message")).then(domain => {
+    MIMC.Service.send(elValue("toAccount"), elValue("message"), "domain" + Date.now()).then(domain => {
       console.log("消息发送成功,Domain:", domain)
     });
   }

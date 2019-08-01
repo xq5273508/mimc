@@ -23,10 +23,10 @@ export function User(appId, appAccount, resource) {
    */
   function ReceiveMessage(message, groupId) {
     const content = message.getPayload();
-    const time = message.getTimeStamp();
+    const timestamp = message.getTimeStamp();
     const sender = message.getFromAccount();
     const packetId = message.getPacketId();
-    receiveMessage({packetId, time, sender, content, groupId});
+    receiveMessage({packetId, timestamp, sender, content, groupId});
   }
 
   let user = new mimc.MIMCUser(appId, appAccount, resource);
@@ -73,10 +73,10 @@ export function User(appId, appAccount, resource) {
       }
       const {success, fail} = promise;
       if (desc === "MSG_CHECK_ACCEPT") {
-        success(packetId);
+        success({packetId, timestamp});
       }
       else {
-        fail(desc);
+        fail({packetId, timestamp, error: desc});
       }
     }
   );
@@ -102,6 +102,7 @@ export function User(appId, appAccount, resource) {
       });
     },
     send(toAccount, message, packetId = "", isGroup = false) {
+      toAccount = String(toAccount);
       return ToPromise((success, fail) => {
         if (!toAccount) {
           return;

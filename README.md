@@ -50,15 +50,15 @@ MIMC.Register("FetchToken", ()=>{<br/>
 事件参数：<br/>
 @param status {EnumStatus}<br/>
 调用方式：<br/>
-MIMC.Register("stateChange", (status) => {<br/>
+MIMC.Register("StateChange", (status) => {<br/>
 &emsp;&emsp;console.log("stateChange", status);<br/>
 });<br/><br/>
 3、receiveMessage<br/>
 接收消息（用户、群消息）<br/>
 事件参数：<br/>
-@param message {Object:{id, time, sender, content, group_id}}<br/>
+@param message {Object:{id, timestamp, sender, content, group_id}}<br/>
 &emsp;&emsp;id:消息客户端id（作用类似于上一版的domain）<br/>
-&emsp;&emsp;time:消息发送时间戳<br/>
+&emsp;&emsp;timestamp:消息发送时间戳<br/>
 &emsp;&emsp;sender:消息发送人<br/>
 &emsp;&emsp;content:消息内容<br/>
 &emsp;&emsp;group_id:消息所属群id（接收用户消息的时候该属性为undefined,只有群消息才返回群号）<br/>
@@ -72,7 +72,7 @@ MIMC.Register("ReceiveMessage", (message) => {<br/>
 @param type {EnumGroupNotice}<br/>
 @param notice {Object}<br/>
 调用方式:<br/>
-MIMC.Register("groupNotice", (type,notice) => {<br/>
+MIMC.Register("GroupNotice", (type,notice) => {<br/>
 &emsp;&emsp;console.log("groupNotice",type,notice);<br/>
 });<br/>
 7、sync（需要完善）<br/>
@@ -134,9 +134,17 @@ MIMC.Register("groupNotice", (type,notice) => {<br/>
 8、async quit(id)<br/>
 退群操作<br/>
 @param id      {string}    群号<br/><br/>
-9、async dismiss(id)<br/>
-根据群号解散群<br/>
+9、async set_admin(id,member)<br/>
+设置群管理员<br/>
 @param id      {string}    群号<br/>
+@param member  {string}    成员编号<br/><br/>
+10、async cancel_admin(id,member)<br/>
+取消群管理员<br/>
+@param id      {string}    群号<br/>
+@param member  {string}    成员编号<br/><br/>
+11、async dismiss(id)<br/>
+根据群号解散群<br/>
+@param id      {string}    群号<br/><br/>
 ## 五、数据请求<br/>
 1、GetSync(url, data, headers)<br/>
 同步方式调用GET<br/>

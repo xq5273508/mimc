@@ -14,6 +14,7 @@ export const EnumDevice = {
   Server: 4
 };
 
+
 export const EnumCommand = {
   Online: 1,                //上线
   Offline: 2,               //下线
@@ -37,5 +38,6 @@ export const EnumGroupNotice = {
   Join: 14,                 //有成员加入
   MemberRemove: 21,         //踢成员出群
   MemberQuit: 22,           //退群
+  SetRole: 30,              //设置角色
   ApplyJoin: 40             //申请入群
 };

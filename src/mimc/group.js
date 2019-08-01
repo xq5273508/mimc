@@ -128,12 +128,15 @@ export class GroupService {
    * 删除群成员
    * @param id        {string}    群号
    * @param members   {string}    要踢的群成员id列表（,连接）
-   * @param token     {string}    群主token
+   * @param owner     {string}    群主token
    * @returns {Promise<*>}
    */
-  static async remove(id, members, token) {
+  static async remove(id, members, owner) {
     //非群主也支持踢人（业务自己判断管理员身份）
-    token = token || MIMCClient.user.getToken();
+    let token = MIMCClient.user.getToken();
+    if (owner) {
+      token = Events.onFetchToken(owner).data.token;
+    }
     SendGroupNotice(id, EnumGroupNotice.MemberRemove, {members});
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}/accounts?accounts=${members}`;
     return await DeleteAsync(url, undefined, {token});
@@ -151,12 +154,32 @@ export class GroupService {
   }
 
   /**
+   * 设置管理员
+   * @param id        {string}    群号
+   * @param member    {string}    成员id
+   * @returns {Promise<void>}
+   */
+  static async set_admin(id, member) {
+    SendGroupNotice(id, EnumGroupNotice.SetRole, {member, role: 2});
+  }
+
+  /**
+   * 取消管理员
+   * @param id        {string}    群号
+   * @param member    {string}    成员id
+   * @returns {Promise<void>}
+   */
+  static async cancel_admin(id, member) {
+    SendGroupNotice(id, EnumGroupNotice.SetRole, {member, role: 3});
+  }
+
+  /**
    * 解散群
    * @param id      {string}    群号
    * @returns {Promise<void>}
    */
   static async dismiss(id) {
-    SendGroupNotice(id, EnumGroupNotice.Dismiss, {});
+    SendGroupNotice(id, EnumGroupNotice.Dismiss);
     const url = `https://mimc.chat.xiaomi.net/api/topic/${MIMCClient.appId}/${id}`;
     await DeleteAsync(url, undefined, {token: MIMCClient.user.getToken()});
   }

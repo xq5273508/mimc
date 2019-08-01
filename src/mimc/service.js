@@ -22,7 +22,7 @@ async function Init() {
       if (notice_match) {
         return TransSystemCommand(parseInt(notice_match[1]), notice_match[2]);
       }
-      if (MIMCClient.timestamp > parseInt(message.time)) {
+      if (MIMCClient.timestamp > parseInt(message.timestamp)) {
         //普通消息时间小于初始化时间，不显示
         return;
       }
