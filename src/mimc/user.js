@@ -73,11 +73,9 @@ export function User(appId, appAccount, resource) {
       }
       const {success, fail} = promise;
       if (desc === "MSG_CHECK_ACCEPT") {
-        success({packetId, timestamp});
+        return success({packetId, timestamp});
       }
-      else {
-        fail({packetId, timestamp, error: desc});
-      }
+      fail({packetId, timestamp, error: desc});
     }
   );
   return {
@@ -110,7 +108,7 @@ export function User(appId, appAccount, resource) {
         packetId = packetId || Guid();
         tobeSet[packetId] = {success, fail};
         if (isGroup) {
-          user.sendGroupMessage(toAccount, message, "json", undefined, packetId);
+          return user.sendGroupMessage(toAccount, message, "json", undefined, packetId);
         }
         user.sendMessage(toAccount, message, undefined, undefined, packetId);
       });
