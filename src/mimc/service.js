@@ -37,14 +37,14 @@ async function Init() {
         user.send(MIMCClient.appAccount, message);
       }
 
-      MIMCClient.status = state;
+      MIMCClient.state = state;
       Events.onStateChange(state, ...args);
     });
     user.onDisConn(() => {
-      if (MIMCClient.status === EnumStatus.Elsewhere) {
+      if (MIMCClient.state === EnumStatus.Elsewhere) {
         return;
       }
-      MIMCClient.status = EnumStatus.DisConnect;
+      MIMCClient.state = EnumStatus.DisConnect;
       Events.onStateChange(EnumStatus.DisConnect);
     });
   }
@@ -102,5 +102,15 @@ export class MIMCService {
    */
   static online(accounts, device = EnumDevice.Mobile) {
     return Online(accounts, device);
+  }
+
+  static appId() {
+    return MIMCClient.appId;
+  }
+
+  static getToken() {
+    if (MIMCClient.state === EnumStatus.Connected)
+      return MIMCClient.user.getToken();
+    throw "用户未登录消息通信";
   }
 }

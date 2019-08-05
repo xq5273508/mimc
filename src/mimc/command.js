@@ -31,7 +31,7 @@ export function TransSystemCommand(command, options) {
       if (timestamp < MIMCClient.timestamp || parseInt(device) !== MIMCClient.device || props.resource === MIMCClient.resource) {
         return;
       }
-      MIMCClient.status = EnumStatus.Elsewhere;
+      MIMCClient.state = EnumStatus.Elsewhere;
       Events.onStateChange(EnumStatus.Elsewhere);
       MIMCClient.user && MIMCClient.user.logout();
       break;
