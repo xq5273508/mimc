@@ -1,3 +1,5 @@
+import {MIMCClient} from "./client";
+
 const mimc = require("../../loader/umd!../../loader/mimc!mimc-webjs-sdk/sdk/mimc-min_1_0_2");
 import {EnumStatus} from "./enum";
 import {Events} from "./register";
@@ -114,7 +116,9 @@ export function User(appId, appAccount, resource) {
       });
     },
     getToken() {
-      return user.getToken();
+      if (MIMCClient.state === EnumStatus.Connected)
+        return user.getToken();
+      throw "用户未登录消息通信";
     },
     getAppAccount() {
       return user.getAppAccount();

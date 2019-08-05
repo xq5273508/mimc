@@ -127,7 +127,7 @@ export class GroupService {
    * 删除群成员
    * @param id        {string}    群号
    * @param members   {string}    要踢的群成员id列表（,连接）
-   * @param owner     {string}    群主token
+   * @param owner     {string}    群主ID
    * @returns {Promise<*>}
    */
   static async remove(id, members, owner) {
