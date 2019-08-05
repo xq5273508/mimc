@@ -104,7 +104,7 @@ export class MIMCService {
     return Online(accounts, device);
   }
 
-  static appId() {
+  static get appId() {
     return MIMCClient.appId;
   }
 
