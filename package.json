@@ -1,6 +1,6 @@
 {
   "name": "mimc",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "main": "dist/mimc.js",
   "repository": "https://github.com/xuqiang2537/mimc.git",
   "author": "xuqiang <5273508@qq.com>",

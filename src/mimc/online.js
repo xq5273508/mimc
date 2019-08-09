@@ -20,7 +20,7 @@ export async function Online(accounts, device = EnumDevice.Mobile) {
   const online = [], offline = [];
   accounts.split(",").forEach(account => {
     const item = OnlineSet[account];
-    if (item && item.timestamp + 60000 > timestamp && (device === 0 && item.onlineResources.length || item.onlineResources.includes(resource))) {
+    if (item && item.timestamp + 20000 > timestamp && (device === 0 && item.onlineResources.length || item.onlineResources.includes(resource))) {
       online.push(account);
     }
     else {
